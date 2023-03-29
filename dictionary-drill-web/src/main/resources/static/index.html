@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Dictionary.com</h1>
+
+    <fieldset>
+        <legend>Add Word</legend>
+        <input id="word" type="text" placeholder="enter word">
+        <br>
+        <input id="definition" type="text" placeholder="definition">
+        <br>
+        <input id="example" type="text" placeholder="example">
+        <br>
+        <button onclick="addEntry(word.value,definition.value,example.value)">Add</button>
+    </fieldset>
+    <fieldset>
+        <legend>Response from Server</legend>
+        <div id="response"></div>
+    </fieldset>
+    <script>
+        function addEntry(word, definition, example) {
+            let examples = new Example(0, example);
+            let entry = new Entry(0, word, definition, examples);
+            console.log(entry);
+            let entryAsJson = JSON.stringify(entry);
+            console.log(entryAsJson);
+          //  let url = 'http://localhost:8080/api/dictionary/add-entry';
+            let url = '/api/dictionary/add-entry';
+            let xhttp = new XMLHttpRequest();
+            xhttp.open('POST', url);
+            xhttp.onload = function () {
+                let enterAsObject = JSON.parse(this.response);
+                let example = new Example(enterAsObject.sentences[0].id, enterAsObject.sentences[0].example);
+                let entry = new Entry(enterAsObject.id, enterAsObject.word, enterAsObject.definition, example);
+                document.getElementById("response").innerHTML = entry.toString();
+
+            }
+            xhttp.setRequestHeader("content-type", "application/json");
+            xhttp.send(entryAsJson);
+        }
+
+        class Entry {
+            constructor(id, word, definition, ...sentences) {
+                this.id = id;
+                this.word = word;
+                this.definition = definition;
+                this.sentences = sentences;
+            }
+            toString() {
+                return "entry - id: " + this.id + ",  word: " + this.word + ", definition: " + this.definition + ", sentences: " + this.sentences;
+            }
+
+        }
+
+        class Example {
+            constructor(id, example) {
+                this.id = id;
+                this.example = example;
+            }
+
+            toString() {
+                return "Example - id: " + this.id + ", exmaple: " + this.example;
+            }
+        }
+    </script>
+</body>
+
+</html>
