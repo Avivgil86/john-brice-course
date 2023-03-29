@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author avivg
+ *
+ */
+module countdwonlatch {
+}
